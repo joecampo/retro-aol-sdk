@@ -1,5 +1,6 @@
 export const enum Events {
   'LOGGED_ON' = '.logged.on',
+  'LOGIN_PROGRESS' = '.login.progress',
   'LOGGED_OFF' = '.logged.off',
   'CHAT_ROOM_USERS' = '.chat.room.users',
   'SET_SCREEN_NAME' = '.set.screen.name',
