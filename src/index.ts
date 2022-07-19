@@ -52,12 +52,24 @@ export class Client implements ClientInterface {
     });
   }
 
-  joinChat(roomName: string): Promise<any> {
-    return this.http.post('/api/join-chat', { roomName });
+  fetchChatRooms(): Promise<any> {
+    return this.http.post('/api/fetch-chat-rooms');
+  }
+
+  joinChatRoom(roomName: string): Promise<any> {
+    return this.http.post('/api/join-chat-room', { roomName });
+  }
+
+  leaveChatRoom(roomName: string): Promise<any> {
+    return this.http.post('/api/leave-chat-room', { roomName });
   }
 
   sendChatMessage(message: string): Promise<any> {
     return this.http.post('/api/send-chat-message', { message });
+  }
+
+  sendInstantMessage(screenName: string, message: string): Promise<any> {
+    return this.http.post('/api/send-instant-message', { screenName, message });
   }
 
   getToken(): string | undefined {

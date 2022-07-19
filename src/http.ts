@@ -23,6 +23,10 @@ export default class HttpClient {
       body: JSON.stringify(body),
     });
 
-    return await response.json();
+    const json = await response.json();
+
+    if (!response.ok) throw new Error(json.message);
+
+    return json;
   }
 }

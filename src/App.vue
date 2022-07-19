@@ -1,9 +1,54 @@
 <template>
   <div class="flex items-center justify-center bg-grey-300 h-screen">
     <div class="flex flex-col gap-y-4 flex-1 max-w-5xl">
+      <div class="flex gap-x-4">
+        <div class="flex items-center gap-x-2">
+          <label for="username">Screen Name:</label>
+          <input
+            id="username"
+            v-model="username"
+            type="text"
+            class="border rounded-lg p-2 shadow focus:ring-1 ring-indigo-300 focus:outline-none"
+          />
+        </div>
+        <div class="flex items-center gap-x-2">
+          <label for="password">Password:</label>
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            class="border rounded-lg p-2 shadow focus:ring-1 ring-indigo-300 focus:outline-none"
+          />
+        </div>
+      </div>
+      <h1 class="text-xl font-bold">Send Instant Message</h1>
+      <div class="flex gap-x-4">
+        <div class="flex items-center gap-x-2">
+          <label for="username">Screen Name:</label>
+          <input
+            id="instantMessageScreenName"
+            v-model="instantMessageScreenName"
+            type="text"
+            class="border rounded-lg p-2 shadow focus:ring-1 ring-indigo-300 focus:outline-none"
+          />
+        </div>
+        <div class="flex items-center gap-x-2">
+          <label for="insantMessage">Message:</label>
+          <input
+            id="insantMessage"
+            v-model="instantMessage"
+            type="insantMessage"
+            class="border rounded-lg p-2 shadow focus:ring-1 ring-indigo-300 focus:outline-none"
+          />
+        </div>
+        <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="sendInstantMessage">Send IM</button>
+      </div>
       <div class="flex gap-x-2">
-        <button class="bg-indigo-300 text-indigo-900 rounded px-3 py-2" @click="client.login('guest')">Login</button>
+        <button class="bg-indigo-300 text-indigo-900 rounded px-3 py-2" @click="login">Login</button>
         <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="client.logoff()">Logoff</button>
+        <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="client.leaveChatRoom('Welcome')">
+          Leave Chat
+        </button>
       </div>
       <ul class="space-y-2">
         <li>
@@ -17,6 +62,9 @@
         </li>
         <li>
           Screen Name: <span class="font-bold text-indigo-600">{{ screenName || '[None]' }}</span>
+        </li>
+        <li>
+          Error: <span class="font-bold text-indigo-600">{{ error || '[None]' }}</span>
         </li>
       </ul>
       <div class="flex gap-x-4">
@@ -33,7 +81,7 @@
       </div>
       <div>
         <input
-          v-model="message"
+          v-model="chatInput"
           type="text"
           class="w-full border rounded-lg p-2 shadow focus:ring-1 ring-indigo-300 focus:outline-none"
           @keydown.enter="sendChatMessage"
@@ -52,23 +100,51 @@ const status = ref(client.isOnline() ? 'Online' : 'Offline');
 if (status.value === 'Offline') localStorage.clear();
 
 const users = ref(localStorage.getItem('users') ? JSON.parse(localStorage.getItem('users') || '') : []);
-
 const screenName = ref(localStorage.getItem('screenName') ? localStorage.getItem('screenName' || '') : '');
-
 const chatMessages = ref<{ screenName: string; message: string }[]>([]);
+const chatInput = ref<string>('');
 
-const message = ref<string>('');
+const instantMessageScreenName = ref<string>('');
+const instantMessage = ref<string>('');
+
+const username = ref<string>('');
+const password = ref<string>('');
+const error = ref<string>('');
+
+const login = (): void => {
+  if (!username.value || !password.value) {
+    client.login('guest');
+    return;
+  }
+
+  client.login(username.value, password.value).catch((e: Error) => {
+    error.value = e.message;
+  });
+};
 
 const sendChatMessage = (): void => {
-  if (!message.value) return;
+  if (!chatInput.value) return;
 
-  client.sendChatMessage(message.value);
-  message.value = '';
+  client.sendChatMessage(chatInput.value);
+  chatInput.value = '';
+};
+
+const sendInstantMessage = (): void => {
+  if (!instantMessage.value || !instantMessageScreenName.value) return;
+
+  client.sendInstantMessage(instantMessageScreenName.value, instantMessage.value);
+
+  instantMessage.value = '';
 };
 
 client.on(Events.LOGGED_ON, () => {
   status.value = 'Online';
-  client.joinChat('Welcome');
+  client.joinChatRoom('Welcome');
+  client.fetchChatRooms();
+});
+
+client.on(Events.LOGIN_INVALID, () => {
+  error.value = 'The screen name or password you have entered is invalid.';
 });
 
 client.on(Events.LOGGED_OFF, () => {
@@ -81,12 +157,28 @@ client.on(Events.SET_SCREEN_NAME, (e: { screenName: string }) => {
   screenName.value = e.screenName;
 });
 
+client.on(Events.CHAT_ROOM_LIST, (e: { chatRooms: string[] }) => {
+  const chatRooms = Object.keys(e.chatRooms)
+    .map((chatRoom: string): string => {
+      return chatRoom + ` (${e.chatRooms[chatRoom]})`;
+    })
+    .join(', ');
+
+  chatMessages.value.push({ screenName: 'OnlineHost', message: chatRooms });
+});
+
 client.on(Events.CHAT_ROOM_USERS, (e: { users: string[] }) => {
   localStorage.setItem('users', JSON.stringify(e.users));
   users.value = e.users;
 });
 
 client.on(Events.NEW_CHAT_MESSAGE, (e: { screenName: string; message: string }) => {
+  chatMessages.value.push(e);
+});
+
+client.on(Events.NEW_INSTANT_MESSAGE, (e: { screenName: string; message: string }) => {
+  e.screenName = `(Instant Message) ${e.screenName}`;
+
   chatMessages.value.push(e);
 });
 
