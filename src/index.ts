@@ -17,6 +17,7 @@ export class Client implements ClientInterface {
 
     this.options = options;
     this.http = new HttpClient(options);
+
     return (async (): Promise<Client> => {
       await this.connect();
 
