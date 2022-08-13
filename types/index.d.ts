@@ -17,6 +17,7 @@ export interface ClientInterface {
   login(username: string, password?: string): Promise<any>;
   logoff(): Promise<any>;
   on(event: Events | string, callback: any): void;
+  off(event: Events | Events[] | string | string[]): void;
   fetchChatRooms(): Promise<any>;
   joinChatRoom(roomName: string): Promise<any>;
   leaveChatRoom(roomName: string): Promise<any>;

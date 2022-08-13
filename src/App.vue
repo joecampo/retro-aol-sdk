@@ -46,9 +46,8 @@
       <div class="flex gap-x-2">
         <button class="bg-indigo-300 text-indigo-900 rounded px-3 py-2" @click="login">Login</button>
         <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="client.logoff()">Logoff</button>
-        <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="client.leaveChatRoom('Welcome')">
-          Leave Chat
-        </button>
+        <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="joinChatRoom">Join Chat</button>
+        <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="leaveChatRoom">Leave Chat</button>
       </div>
       <ul class="space-y-2">
         <li>
@@ -129,6 +128,38 @@ const sendChatMessage = (): void => {
   chatInput.value = '';
 };
 
+const joinChatRoom = (): void => {
+  client.on(Events.NEW_CHAT_MESSAGE, (e: { screenName: string; message: string }) => {
+    chatMessages.value.push(e);
+  });
+
+  client.on(Events.CHAT_ROOM_USERS, (e: { users: string[] }) => {
+    localStorage.setItem('users', JSON.stringify(e.users));
+    users.value = e.users;
+  });
+
+  client.on(Events.NEW_INSTANT_MESSAGE, (e: { screenName: string; message: string }) => {
+    e.screenName = `(Instant Message) ${e.screenName}`;
+
+    chatMessages.value.push(e);
+  });
+
+  client.on(Events.USER_ENTERED_CHAT, (e: { screenName: string }) => {
+    chatMessages.value.push({ screenName: 'OnlineHost', message: `${e.screenName} has entered the chat room.` });
+  });
+
+  client.on(Events.USER_LEFT_CHAT, (e: { screenName: string }) => {
+    chatMessages.value.push({ screenName: 'OnlineHost', message: `${e.screenName} has left the chat room.` });
+  });
+
+  client.joinChatRoom('Welcome');
+};
+
+const leaveChatRoom = (): void => {
+  client.leaveChatRoom('Welcome');
+  client.off([Events.NEW_CHAT_MESSAGE, Events.CHAT_ROOM_USERS, Events.USER_ENTERED_CHAT, Events.USER_LEFT_CHAT]);
+};
+
 const sendInstantMessage = (): void => {
   if (!instantMessage.value || !instantMessageScreenName.value) return;
 
@@ -139,7 +170,6 @@ const sendInstantMessage = (): void => {
 
 client.on(Events.LOGGED_ON, () => {
   status.value = 'Online';
-  client.joinChatRoom('Welcome');
   client.fetchChatRooms();
 });
 
@@ -165,28 +195,5 @@ client.on(Events.CHAT_ROOM_LIST, (e: { chatRooms: string[] }) => {
     .join(', ');
 
   chatMessages.value.push({ screenName: 'OnlineHost', message: chatRooms });
-});
-
-client.on(Events.CHAT_ROOM_USERS, (e: { users: string[] }) => {
-  localStorage.setItem('users', JSON.stringify(e.users));
-  users.value = e.users;
-});
-
-client.on(Events.NEW_CHAT_MESSAGE, (e: { screenName: string; message: string }) => {
-  chatMessages.value.push(e);
-});
-
-client.on(Events.NEW_INSTANT_MESSAGE, (e: { screenName: string; message: string }) => {
-  e.screenName = `(Instant Message) ${e.screenName}`;
-
-  chatMessages.value.push(e);
-});
-
-client.on(Events.USER_ENTERED_CHAT, (e: { screenName: string }) => {
-  chatMessages.value.push({ screenName: 'OnlineHost', message: `${e.screenName} has entered the chat room.` });
-});
-
-client.on(Events.USER_LEFT_CHAT, (e: { screenName: string }) => {
-  chatMessages.value.push({ screenName: 'OnlineHost', message: `${e.screenName} has left the chat room.` });
 });
 </script>

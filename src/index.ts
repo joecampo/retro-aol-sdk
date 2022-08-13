@@ -47,10 +47,21 @@ export class Client implements ClientInterface {
     return this.http.post('/api/logoff', {});
   }
 
-  on(event: Events, callback: any): void {
+  on(event: Events | string, callback: any): void {
     this.echo?.client.private(`client.${this.sessionId}`).listen(event, (e: any): void => {
       callback(e);
     });
+  }
+
+  off(event: Events | Events[] | string | string[]): void {
+    if (Array.isArray(event)) {
+      event.forEach((e: Events | string): void => {
+        this.echo?.client.private(`client.${this.sessionId}`).stopListening(e);
+      });
+      return;
+    }
+
+    this.echo?.client.private(`client.${this.sessionId}`).stopListening(event);
   }
 
   fetchChatRooms(): Promise<any> {
