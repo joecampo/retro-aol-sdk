@@ -1,7 +1,7 @@
 {
   "name": "retro-aol-sdk",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.1.1",
   "files": [
     "dist",
     "types"
