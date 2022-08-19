@@ -1,4 +1,4 @@
-import EchoClient from './echo';
+import NativeEchoClient from './echo-native';
 import Api from './api';
 import { ClientInterface, OptionsInterface } from '../types';
 
@@ -9,7 +9,7 @@ export class Client extends Api implements ClientInterface {
     return (async (): Promise<Client> => {
       await this.connect();
 
-      this.echo = new EchoClient(this.token || '', options);
+      this.echo = new NativeEchoClient(this.token || '', options);
 
       this.echo.client.private(`client.${this.sessionId}`);
 

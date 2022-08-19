@@ -1,8 +1,8 @@
 import Echo from 'laravel-echo';
 import { OptionsInterface } from '../types';
-import Pusher from 'pusher-js';
+import Pusher from 'pusher-js/react-native';
 
-export default class EchoClient {
+export default class NativeEchoClient {
   token: string;
   options: OptionsInterface;
   client: Echo;

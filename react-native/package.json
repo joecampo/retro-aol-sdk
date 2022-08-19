@@ -1,0 +1,7 @@
+{
+    "name": "retro-aol-sdk/react-native",
+    "private": true,
+    "main": "../dist/retro-aol-sdk-native.umd.js",
+    "module": "../dist/retro-aol-sdk-native.es.js",
+    "types": "../dist/index.d.ts"
+}
