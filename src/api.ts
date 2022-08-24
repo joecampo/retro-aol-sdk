@@ -8,6 +8,7 @@ export default class Api {
   online: boolean | undefined;
   options: OptionsInterface | undefined;
   echo: EchoClient | undefined;
+  events: string[] = [];
   http: HttpClient;
 
   constructor(options: OptionsInterface) {
@@ -34,6 +35,10 @@ export default class Api {
   }
 
   on(event: Events | string, callback: any): void {
+    if (this.events.includes(event)) return;
+
+    this.events.push(event);
+
     this.echo?.client.private(`client.${this.sessionId}`).listen(event, (e: any): void => {
       callback(e);
     });
@@ -42,10 +47,14 @@ export default class Api {
   off(event: Events | Events[] | string | string[]): void {
     if (Array.isArray(event)) {
       event.forEach((e: Events | string): void => {
+        this.events = this.events.filter((event) => e !== event);
+
         this.echo?.client.private(`client.${this.sessionId}`).stopListening(e);
       });
       return;
     }
+
+    this.events = this.events.filter((event) => event !== event);
 
     this.echo?.client.private(`client.${this.sessionId}`).stopListening(event);
   }
