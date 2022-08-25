@@ -31,6 +31,13 @@ export default class Api {
   logoff(): Promise<any> {
     this.online = false;
 
+    this.events
+      .filter((event) => event !== '.logged.off')
+      .forEach((event) => {
+        this.echo?.client.private(`client.${this.sessionId}`).stopListening(event);
+        this.events = this.events.filter((e) => e !== event);
+      });
+
     return this.http.post('/api/logoff', {});
   }
 
@@ -54,7 +61,7 @@ export default class Api {
       return;
     }
 
-    this.events = this.events.filter((event) => event !== event);
+    this.events = this.events.filter((e) => e !== event);
 
     this.echo?.client.private(`client.${this.sessionId}`).stopListening(event);
   }
