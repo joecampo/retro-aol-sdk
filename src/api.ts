@@ -95,6 +95,11 @@ export default class Api {
   }
 
   async connect(): Promise<void> {
+    if (this.options?.token) {
+      this.token = this.options.token;
+      this.http.setToken(this.options.token);
+    }
+
     const { online, token, sessionId } = await this.http.post('/api/sessions');
 
     this.online = online;

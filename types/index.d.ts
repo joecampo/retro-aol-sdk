@@ -30,4 +30,5 @@ export interface ClientInterface {
 export interface OptionsInterface {
   server?: string;
   websocketServer?: string;
+  token?: string | null;
 }
