@@ -1,5 +1,6 @@
 import EchoClient from './echo';
 import HttpClient from './http';
+import Pusher from 'pusher-js/types/src/core/pusher';
 import { OptionsInterface, Events } from '../types';
 
 export default class Api {
@@ -92,6 +93,10 @@ export default class Api {
 
   getSessionId(): string | undefined {
     return this.sessionId;
+  }
+
+  websocket(): Pusher {
+    return this.echo?.client.connector.pusher;
   }
 
   async connect(): Promise<void> {

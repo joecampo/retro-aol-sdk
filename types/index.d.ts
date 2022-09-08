@@ -1,3 +1,5 @@
+import Pusher from 'pusher-js/types/src/core/pusher';
+
 export const enum Events {
   'LOGGED_ON' = '.logged.on',
   'LOGIN_PROGRESS' = '.login.progress',
@@ -25,6 +27,7 @@ export interface ClientInterface {
   sendInstantMessage(screenName: string, message: string): Promise<any>;
   getToken(): string | undefined;
   getSessionId(): string | undefined;
+  websocket(): Pusher;
 }
 
 export interface OptionsInterface {
