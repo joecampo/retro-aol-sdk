@@ -29,4 +29,18 @@ export default class HttpClient {
 
     return json;
   }
+
+  async get(path: string): Promise<any> {
+    const response: Response = await fetch(`${this.options.server}${path}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: this.headers,
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) throw new Error(json.message);
+
+    return json;
+  }
 }

@@ -90,7 +90,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { ClientInterface, Events } from '../types/index.d';
 
 const client = inject('client') as ClientInterface;
@@ -109,6 +109,16 @@ const instantMessage = ref<string>('');
 const username = ref<string>('');
 const password = ref<string>('');
 const error = ref<string>('');
+
+onMounted(() => {
+  if (status.value !== 'Online') return;
+
+  client.fetchChatMessages().then((messages) => {
+    messages.forEach((message) => {
+      chatMessages.value.push({ screenName: message.screenName, message: message.message });
+    });
+  });
+});
 
 const login = (): void => {
   if (!username.value || !password.value) {
