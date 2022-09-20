@@ -87,6 +87,10 @@ export default class Api {
     return this.http.get('/api/chat-messages');
   }
 
+  fetchChatUsers(): Promise<any> {
+    return this.http.get('/api/chat-users');
+  }
+
   sendInstantMessage(screenName: string, message: string): Promise<any> {
     return this.http.post('/api/send-instant-message', { screenName, message });
   }

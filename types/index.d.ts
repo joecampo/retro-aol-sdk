@@ -25,6 +25,7 @@ export interface ClientInterface {
   leaveChatRoom(roomName: string): Promise<any>;
   sendChatMessage(message: string): Promise<any>;
   fetchChatMessages(): Promise<any>;
+  fetchChatUsers(): Promise<any>;
   sendInstantMessage(screenName: string, message: string): Promise<any>;
   getToken(): string | undefined;
   getSessionId(): string | undefined;

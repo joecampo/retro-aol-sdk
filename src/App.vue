@@ -48,6 +48,7 @@
         <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="client.logoff()">Logoff</button>
         <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="joinChatRoom">Join Chat</button>
         <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="leaveChatRoom">Leave Chat</button>
+        <button class="bg-indigo-200 text-indigo-900 rounded px-3 py-2" @click="fetchChatUsers">Chat Users</button>
       </div>
       <ul class="space-y-2">
         <li>
@@ -176,6 +177,12 @@ const sendInstantMessage = (): void => {
   client.sendInstantMessage(instantMessageScreenName.value, instantMessage.value);
 
   instantMessage.value = '';
+};
+
+const fetchChatUsers = (): void => {
+  client.fetchChatUsers().then((response) => {
+    chatMessages.value.push({ screenName: 'OnlineHost', message: `Users: ${response.join(', ')}` });
+  });
 };
 
 client.on(Events.LOGGED_ON, () => {
