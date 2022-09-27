@@ -25,6 +25,14 @@ export default class Api {
     return this.online || false;
   }
 
+  async status(): Promise<any> {
+    const response = await this.http.get('/api/status');
+
+    this.online = response === 1 ? true : false;
+
+    return this.online;
+  }
+
   login(username: string, password?: string | undefined): Promise<any> {
     return this.http.post('/api/login', { username, password });
   }

@@ -16,6 +16,7 @@ export const enum Events {
 
 export interface ClientInterface {
   isOnline(): boolean;
+  status(): Promise<any>;
   login(username: string, password?: string): Promise<any>;
   logoff(): Promise<any>;
   on(event: Events | string, callback: any): void;
