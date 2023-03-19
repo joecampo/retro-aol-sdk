@@ -24,7 +24,7 @@ export interface ClientInterface {
   fetchChatRooms(): Promise<any>;
   joinChatRoom(roomName: string): Promise<any>;
   leaveChatRoom(roomName: string): Promise<any>;
-  sendChatMessage(message: string): Promise<any>;
+  sendChatMessage(message: string, id?: string): Promise<any>;
   fetchChatMessages(): Promise<any>;
   fetchChatUsers(): Promise<any>;
   sendInstantMessage(screenName: string, message: string): Promise<any>;

@@ -92,6 +92,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { v4 as uuidv4 } from 'uuid';
 import { inject, ref, onMounted } from 'vue';
 import { ClientInterface, Events } from '../types/index.d';
 
@@ -136,7 +137,7 @@ const login = (): void => {
 const sendChatMessage = (): void => {
   if (!chatInput.value) return;
 
-  client.sendChatMessage(chatInput.value);
+  client.sendChatMessage(chatInput.value, uuidv4());
   chatInput.value = '';
 };
 

@@ -87,8 +87,8 @@ export default class Api {
     return this.http.post('/api/leave-chat-room', { roomName });
   }
 
-  sendChatMessage(message: string): Promise<any> {
-    return this.http.post('/api/send-chat-message', { message });
+  sendChatMessage(message: string, id?: string): Promise<any> {
+    return this.http.post('/api/send-chat-message', { message, id: id || null });
   }
 
   fetchChatMessages(): Promise<any> {
